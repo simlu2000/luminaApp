@@ -1,4 +1,4 @@
-import { Sun, CloudRain, Cloud, Thermometer, Moon, Camera, Loader2 } from "lucide-react";
+import { Sun, CloudRain, Cloud, Thermometer, Moon, Camera, Loader2, Eye, Wind, Droplets } from "lucide-react";
 
 function WeatherBoard({ weatherData }: { weatherData: any }) {
 
@@ -10,6 +10,16 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
             </div>
         );
     }
+
+    const getWeatherIcon = (main: string, size = "w-5 h-5") => {
+        switch (main) {
+            case "Clear": return <Sun className={`${size} text-yellow-400`} />;
+            case "Clouds": return <Cloud className={`${size} text-slate-300`} />;
+            case "Rain": return <CloudRain className={`${size} text-blue-400`} />;
+            case "Snow": return <Moon className={`${size} text-indigo-200`} />;
+            default: return <Sun className={`${size} text-yellow-400`} />;
+        }
+    };
     return (
         <div className="
             fixed top-4 md:top-10 left-4 md:left-10 right-4 md:right-10 
@@ -52,37 +62,97 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                 </div>
             </div>
 
-            {/* Card 2: Linea Temporale Meteo */}
+            {/* Card 2: Linea Temporale Meteo Dinamica */}
             <div className="bg-white/5 p-5 md:p-6 rounded-[2rem] border border-white/5 backdrop-blur-sm">
                 <div className="relative flex items-center justify-between w-full px-2">
-                    {/* Linea di base orizzontale */}
                     <div className="absolute top-[45%] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-y-1/2 z-0" />
 
                     {[
-                        { time: "08:00", icon: <Sun className="w-5 h-5 text-yellow-400" />, active: false },
-                        { time: "12:00", icon: <Sun className="w-5 h-5 text-yellow-500" />, active: true },
-                        { time: "16:00", icon: <Cloud className="w-5 h-5 text-slate-300" />, active: false },
-                        { time: "20:00", icon: <CloudRain className="w-5 h-5 text-blue-400" />, active: false },
-                        { time: "00:00", icon: <Moon className="w-5 h-5 text-indigo-200" />, active: false },
+                        {
+                            time: new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            icon: <Sun className="w-5 h-5 text-orange-300" />,
+                            label: "Alba",
+                            active: false
+                        },
+                        {
+                            time: new Date(weatherData.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            icon: getWeatherIcon(weatherData.weather[0].main),
+                            label: "Ora",
+                            active: true
+                        },
+                        {
+                            time: new Date(weatherData.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            icon: <Moon className="w-5 h-5 text-indigo-300" />,
+                            label: "Tramonto",
+                            active: false
+                        }
                     ].map((item, index) => (
                         <div key={index} className="relative z-10 flex flex-col items-center gap-3 group">
-                            {/* Punto di snodo sulla linea */}
                             <div className={`w-2 h-2 rounded-full transition-all duration-500 ${item.active ? 'bg-yellow-400 ring-4 ring-yellow-400/20 scale-125' : 'bg-white/20'}`} />
 
                             <div className="flex flex-col items-center gap-1">
                                 <div className={`transition-all duration-300 ${item.active ? 'scale-110 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]' : 'opacity-50 group-hover:opacity-100'}`}>
                                     {item.icon}
                                 </div>
-                                <span className={`text-[10px] font-medium tracking-tighter ${item.active ? 'text-white' : 'opacity-40'}`}>
-                                    {item.time}
-                                </span>
+                                <div className="flex flex-col items-center">
+                                    <span className={`text-[10px] font-bold ${item.active ? 'text-white' : 'opacity-80'}`}>
+                                        {item.time}
+                                    </span>
+                                    <span className="text-[8px] uppercase opacity-40 tracking-tighter">
+                                        {item.label}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Card 3: Consigli Scatto */}
+            {/* Card 3: dati foto */}
+            <div className="flex flex-col gap-3">
+                {/* Prima riga: Umidità e Visibilità */}
+                <div className="flex gap-3">
+                    <div className="flex-1 flex items-center gap-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-4 rounded-2xl border border-white/5">
+                        <div className="p-2 bg-white/10 rounded-lg">
+                            <Droplets className="w-5 h-5 text-blue-300" />
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-xs font-semibold uppercase opacity-50">Umidità</p>
+                            <p className="text-sm font-medium">{weatherData?.main?.humidity}%</p>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 flex items-center gap-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-4 rounded-2xl border border-white/5">
+                        <div className="p-2 bg-white/10 rounded-lg">
+                            <Eye className="w-5 h-5 text-cyan-300" />
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-xs font-semibold uppercase opacity-50">Visibilità</p>
+                            <p className="text-sm font-medium">
+                                {weatherData?.visibility ? (weatherData.visibility / 1000).toFixed(1) : "--"} km
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Seconda riga: Vento e Direzione */}
+                <div className="flex items-center gap-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-4 rounded-2xl border border-white/5">
+                    <div className="p-2 bg-white/10 rounded-lg">
+                        <Wind className="w-5 h-5 text-blue-300" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="text-xs font-semibold uppercase opacity-50">Vento</p>
+                        <p className="text-sm font-medium">
+                            {weatherData?.wind?.speed ? Math.round(weatherData.wind.speed * 3.6) : "--"} km/h
+                        </p>
+                    </div>
+                    <div className="text-[10px] uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                        Direzione: {weatherData?.wind?.deg}°
+                    </div>
+                </div>
+            </div>
+
+            {/* Card 4: Consigli Scatto */}
             <div className="flex items-center gap-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-4 rounded-2xl border border-white/5">
                 <div className="p-2 bg-white/10 rounded-lg">
                     <Camera className="w-5 h-5 text-indigo-300" />
