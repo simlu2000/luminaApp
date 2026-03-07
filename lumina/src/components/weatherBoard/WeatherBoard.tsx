@@ -20,6 +20,60 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
             default: return <Sun className={`${size} text-yellow-400`} />;
         }
     };
+
+    const getPhotographyAdvice = () => {
+        const now = weatherData.dt;
+        const sunrise = weatherData.sys.sunrise;
+        const sunset = weatherData.sys.sunset;
+        const clouds = weatherData.clouds.all; // % di nuvole
+        const visibility = weatherData.visibility; // in metri
+        const wind = weatherData.wind.speed; // m/s
+        const hour = 3600;
+
+        // 1. Caso Golden Hour
+        if ((now >= sunrise && now < sunrise + hour) || (now >= sunset - hour && now < sunset)) {
+            return {
+                title: "Golden Hour in corso",
+                desc: clouds > 50
+                    ? "Luce calda diffusa dalle nuvole. Ottima per ritratti senza ombre dure."
+                    : "Luce radente perfetta. Cerca i riflessi dorati sul lungomare di Rapallo."
+            };
+        }
+
+        // 2. Caso Scarsa Visibilità / Foschia
+        if (visibility < 5000) {
+            return {
+                title: "Atmosfera Soft",
+                desc: "Foschia rilevata. Ottima per scatti minimalisti o bianco e nero ad alto contrasto."
+            };
+        }
+
+        // 3. Caso Vento Forte (Mare mosso)
+        if (wind > 8) {
+            return {
+                title: "Lunga Esposizione",
+                desc: "Vento teso: usa un treppiede e filtri ND per rendere l'acqua del mare come seta."
+            };
+        }
+
+        // 4. Caso Cielo Limpido
+        if (clouds < 10 && visibility > 9000) {
+            return {
+                title: "Cielo Terzo",
+                desc: "Visibilità massima. Punta verso l'orizzonte o prova la fotografia astronomica stasera."
+            };
+        }
+
+        // Default
+        return {
+            title: "Luce Neutra",
+            desc: "Condizioni stabili. Ideale per street photography e architettura nel centro storico."
+        };
+    };
+
+    const advice = getPhotographyAdvice();
+
+
     return (
         <div className="
             fixed top-4 md:top-10 left-4 md:left-10 right-4 md:right-10 
@@ -105,6 +159,24 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                             </div>
                         </div>
                     ))}
+
+                </div>
+                <div style={{ marginTop: '5%' }} className="leading-tight">
+                    <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+                        {(() => {
+                            const now = weatherData.dt;
+                            const sunrise = weatherData.sys.sunrise;
+                            const sunset = weatherData.sys.sunset;
+
+                            if (now < sunrise) {
+                                return "Next: Blue Hour (Sunrise)";
+                            } else if (now < sunset) {
+                                return "Next: Golden Hour (Sunset)";
+                            } else {
+                                return "Next: Blue Hour (Dawn)";
+                            }
+                        })()}
+                    </h2>
                 </div>
             </div>
 
@@ -152,17 +224,19 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                 </div>
             </div>
 
-            {/* Card 4: Consigli Scatto */}
+            {/* Card 4: Consigli Scatto Dinamici */}
             <div className="flex items-center gap-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-4 rounded-2xl border border-white/5">
                 <div className="p-2 bg-white/10 rounded-lg">
                     <Camera className="w-5 h-5 text-indigo-300" />
                 </div>
                 <div className="flex-1">
-                    <p className="text-xs font-semibold">Luce perfetta per scatti dorati</p>
-                    <p className="text-[10px] opacity-60">Usa un filtro ND2 per risaltare i riflessi del mare.</p>
+                    <p className="text-xs font-semibold">{advice.title}</p>
+                    <p className="text-[10px] opacity-60 leading-tight">
+                        {advice.desc}
+                    </p>
                 </div>
                 <button className="text-[10px] bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full border border-white/10 transition-all">
-                    Dettagli
+                    {Math.round(weatherData.clouds.all)}% Clouds
                 </button>
             </div>
         </div>

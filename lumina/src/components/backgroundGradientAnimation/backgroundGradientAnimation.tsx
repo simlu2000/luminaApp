@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef} from "react"
 import { cn } from "../../lib/utils"
 
 // Definiamo l'interfaccia una sola volta ed esportiamola direttamente
@@ -19,12 +19,14 @@ export interface BackgroundGradientAnimationProps {
   children?: React.ReactNode
   className?: string
   interactive?: boolean
+  weatherData?: any
 }
 
 export const BackgroundGradientAnimation = ({
   gradientBackgroundStart = "rgb(15, 23, 42)",   // blu notte
   gradientBackgroundEnd = "rgb(49, 46, 129)",    // indigo
 
+  
   firstColor = "56, 189, 248",    // azzurro luminoso
   secondColor = "168, 85, 247",   // violetto
   thirdColor = "99, 102, 241",    // indigo
@@ -35,7 +37,56 @@ export const BackgroundGradientAnimation = ({
   children,
   className,
   interactive = true,
+  weatherData,
 }: BackgroundGradientAnimationProps) => {
+
+
+  // Logica di determinazione del tema
+  const getTheme = () => {
+    if (!weatherData) return {}; // Tema default se i dati mancano
+
+    const now = weatherData.dt;
+    const sunrise = weatherData.sys.sunrise;
+    const sunset = weatherData.sys.sunset;
+    const margin = 3600; //1 hour in secs
+
+    // BLUE HOUR (Prima dell'alba o dopo il tramonto)
+    if ((now > sunrise - margin && now < sunrise) || (now > sunset && now < sunset + margin)) {
+      return {
+        gradientBackgroundStart: "rgb(15, 23, 42)", // Blu scuro profondo
+        gradientBackgroundEnd: "rgb(30, 58, 138)",   // Royal blue
+        firstColor: "29, 78, 216",  // Blu intenso
+        secondColor: "126, 34, 206", // Viola profondo
+        thirdColor: "30, 64, 175",  // Blu notte
+        fourthColor: "147, 197, 253", // Azzurro ghiaccio
+      };
+    }
+
+    // GOLDEN HOUR (Dopo l'alba o prima del tramonto)
+    if ((now >= sunrise && now < sunrise + margin) || (now >= sunset - margin && now <= sunset)) {
+      return {
+        gradientBackgroundStart: "rgb(124, 45, 18)", // Arancio bruciato scuro
+        gradientBackgroundEnd: "rgb(69, 10, 10)",    // Bordeaux/Nero
+        firstColor: "251, 146, 60", // Arancione vivido
+        secondColor: "251, 191, 36", // Oro/Ambra
+        thirdColor: "220, 38, 38",  // Rosso tramonto
+        fourthColor: "124, 58, 237", // Accento viola cielo
+      };
+    }
+
+    // DEFAULT (Giorno o Notte standard)
+    return {
+      gradientBackgroundStart,
+      gradientBackgroundEnd,
+      firstColor,
+      secondColor,
+      thirdColor,
+      fourthColor,
+    };
+  };
+
+  const theme = getTheme();
+
   const containerRef = useRef<HTMLDivElement>(null)
   const interactiveRef = useRef<HTMLDivElement>(null)
 
@@ -116,7 +167,7 @@ export const BackgroundGradientAnimation = ({
           className="absolute rounded-full"
           style={{
             ...gradientStyle,
-            background: `radial-gradient(circle at center, rgb(${firstColor}) 0%, rgb(${firstColor}) 50%, transparent 50%)`,
+            background: `radial-gradient(circle at center, rgb(${theme.firstColor}) 0%, rgb(${theme.firstColor}) 50%, transparent 50%)`,
             top: `calc(50% - ${size} / 2)`,
             left: `calc(50% - ${size} / 2)`,
             transformOrigin: "center center",

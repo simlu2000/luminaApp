@@ -60,7 +60,7 @@ function DashboardScreen() {
 
     return (
         <div className="min-h-screen font-sans bg-slate-950 overflow-hidden">
-            <BackgroundGradientAnimation>
+            <BackgroundGradientAnimation weatherData = {weatherData}>
                 {/* Contenitore principale con scroll se necessario */}
                 <div className="relative z-50 h-full w-full overflow-y-auto px-4 pb-20">
 
