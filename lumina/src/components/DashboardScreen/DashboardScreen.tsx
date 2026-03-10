@@ -11,9 +11,8 @@ function DashboardScreen() {
 
     const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
 
-    const [currentLocation] = useState("Rapallo");
-    //console.log("API",API_KEY)
-    console.log(weatherData)
+    const [currentLocation] = useState("Genova");
+    //console.log(weatherData)
     useEffect(() => {
         const fetchWeather = async () => {
             if (!API_KEY) {
@@ -64,14 +63,14 @@ function DashboardScreen() {
                 {/* Contenitore principale con scroll se necessario */}
                 <div className="relative z-50 h-full w-full overflow-y-auto px-4 pb-20">
 
-                    <div className="mt-[15%] md:mt-[10%]">
+                    <div className="mt-[10vh] md:mt-[15vh]">
                         <h1 className="text-5xl md:text-7xl font-bold mb-8 text-center tracking-tight text-white drop-shadow-2xl">
                             Dashboard
                         </h1>
                     </div>
 
                     {/* Dati Meteo */}
-                    <div className="mt-10 flex justify-center">
+                    <div className="mt-[10vh]  flex justify-center">
                         <div className="w-full max-w-4xl">
                             <InfoCard weatherData={weatherData} />
                         </div>
