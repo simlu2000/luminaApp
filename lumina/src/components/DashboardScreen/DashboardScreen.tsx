@@ -11,35 +11,41 @@ function DashboardScreen() {
 
     const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
 
-    const [currentLocation] = useState("Genova");
+    const [currentLocation] = useState("Genova"); //default
     //console.log(weatherData)
+
+    const getPosition = () => {
+      return new Promise((resolve, reject) => { //richiesta permesso recupero posizione gps
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+    };
+    
     useEffect(() => {
-        const fetchWeather = async () => {
-            if (!API_KEY) {
-                console.error("API Key non trovata!");
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const response = await axios.get(
-                    `https://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=metric&lang=it&appid=${API_KEY}`
-                );
-                setWeatherData((prevData: any) => {
-                    const isDifferent = JSON.stringify(prevData) !== JSON.stringify(response.data);
-
-                    if (isDifferent) {
-                        console.log("Dati cambiati! Aggiorno la Dashboard.");
-                        return response.data;
-                    }
-
-                    return prevData;
-                });
-                setLoading(false);
-            } catch (error) {
-                console.error("Errore nel recupero meteo:", error);
-                setLoading(false);
-            }
+       const fetchWeather = async () => {
+        setLoading(true);
+        try {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    const response = await axios.get(
+                        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&lang=it&appid=${API_KEY}`
+                    );
+                    setWeatherData(response.data);
+                    setLoading(false);
+                },
+                async (error) => {
+                    console.log("GPS negato o non disponibile, uso città di default:", currentLocation);
+                    const response = await axios.get(
+                        `https://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=metric&lang=it&appid=${API_KEY}`
+                    );
+                    setWeatherData(response.data);
+                    setLoading(false);
+                }
+            );
+        } catch (error) {
+            console.error("Errore critico nel recupero meteo:", error);
+            setLoading(false);
+        }
         };
 
         fetchWeather();
