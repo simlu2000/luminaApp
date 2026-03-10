@@ -77,6 +77,7 @@ function DashboardScreen() {
 
                     {/* Grafico */}
                     <div className="mt-10">
+                        
                     </div>
                 </div>
             </BackgroundGradientAnimation>
