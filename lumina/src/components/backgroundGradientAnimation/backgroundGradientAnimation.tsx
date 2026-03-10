@@ -1,10 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useCallback, useEffect, useRef} from "react"
+import { useCallback, useEffect, useRef, useMemo } from "react"
 import { cn } from "../../lib/utils"
 
-// Definiamo l'interfaccia una sola volta ed esportiamola direttamente
 export interface BackgroundGradientAnimationProps {
   gradientBackgroundStart?: string
   gradientBackgroundEnd?: string
@@ -26,7 +25,6 @@ export const BackgroundGradientAnimation = ({
   gradientBackgroundStart = "rgb(15, 23, 42)",   // blu notte
   gradientBackgroundEnd = "rgb(49, 46, 129)",    // indigo
 
-  
   firstColor = "56, 189, 248",    // azzurro luminoso
   secondColor = "168, 85, 247",   // violetto
   thirdColor = "99, 102, 241",    // indigo
@@ -40,10 +38,15 @@ export const BackgroundGradientAnimation = ({
   weatherData,
 }: BackgroundGradientAnimationProps) => {
 
-
-  // Logica di determinazione del tema
-  const getTheme = () => {
-    if (!weatherData) return {}; // Tema default se i dati mancano
+  const theme = useMemo(() => {
+    if (!weatherData) return {
+      gradientBackgroundStart,
+      gradientBackgroundEnd,
+      firstColor,
+      secondColor,
+      thirdColor,
+      fourthColor,
+    }; // Tema default 
 
     const now = weatherData.dt;
     const sunrise = weatherData.sys.sunrise;
@@ -83,14 +86,11 @@ export const BackgroundGradientAnimation = ({
       thirdColor,
       fourthColor,
     };
-  };
-
-  const theme = getTheme();
+  }, [weatherData, gradientBackgroundStart, gradientBackgroundEnd, firstColor, secondColor, thirdColor, fourthColor]);
 
   const containerRef = useRef<HTMLDivElement>(null)
   const interactiveRef = useRef<HTMLDivElement>(null)
 
-  // Fix TS2554: Inizializzato a null per compatibilità TypeScript
   const animationRef = useRef<number | null>(null)
   const positionRef = useRef({ curX: 0, curY: 0, tgX: 0, tgY: 0 })
 
@@ -134,13 +134,13 @@ export const BackgroundGradientAnimation = ({
   return (
     <div
       ref={containerRef}
-      // h-screen w-screen e overflow-hidden impediscono allo sfondo di "uscire" dai bordi
+      // h-screen w-screen e overflow-hidden cosi non esce da bordi
       className={cn(
         "fixed inset-0 h-screen w-screen overflow-hidden bg-slate-950",
         className
       )}
       style={{
-        background: `linear-gradient(40deg, ${gradientBackgroundStart}, ${gradientBackgroundEnd})`,
+        background: `linear-gradient(40deg, ${theme.gradientBackgroundStart}, ${theme.gradientBackgroundEnd})`,
       }}
       onMouseMove={interactive ? handleMouseMove : undefined}
     >
@@ -160,11 +160,11 @@ export const BackgroundGradientAnimation = ({
         </defs>
       </svg>
 
-      {/* Container delle sfere animate */}
-      <div className="absolute inset-0 overflow-hidden blur-lg [filter:url(#goo-filter)_blur(40px)]">
+      {/* Container sfere animate blobs - con will-change (pre render) e blur */}
+      <div className="absolute inset-0 overflow-hidden blur-3xl [filter:url(#goo-filter)_blur(40px)] will-change-transform">
         {/* Blob 1 */}
         <motion.div
-          className="absolute rounded-full"
+          className="absolute rounded-full will-change-transform"
           style={{
             ...gradientStyle,
             background: `radial-gradient(circle at center, rgb(${theme.firstColor}) 0%, rgb(${theme.firstColor}) 50%, transparent 50%)`,
@@ -181,15 +181,15 @@ export const BackgroundGradientAnimation = ({
 
         {/* Blob 2 */}
         <motion.div
-          className="absolute rounded-full opacity-80"
+          className="absolute rounded-full opacity-80 will-change-transform"
           style={{
             ...gradientStyle,
-            background: `radial-gradient(circle at center, rgba(${secondColor}, 0.8) 0%, transparent 50%)`,
+            background: `radial-gradient(circle at center, rgba(${theme.secondColor}, 0.8) 0%, transparent 50%)`,
             top: `calc(50% - ${size} / 2)`,
             left: `calc(50% - ${size} / 2)`,
             transformOrigin: "calc(50% - 400px) center",
           }}
-          animate={{ rotate: [0, -360], x: [0, 100, -50, 0], y: [0, -80, 60, 0] }}
+          animate={{ rotate: [0, -360], x: [0, 50, -25, 0], y: [0, -40, 30, 0] }}
           transition={{
             rotate: { duration: 15, repeat: Infinity, ease: "linear" },
             x: { duration: 12, repeat: Infinity, ease: "easeInOut" },
@@ -199,15 +199,15 @@ export const BackgroundGradientAnimation = ({
 
         {/* Blob 3 */}
         <motion.div
-          className="absolute rounded-full opacity-80"
+          className="absolute rounded-full opacity-80 will-change-transform"
           style={{
             ...gradientStyle,
-            background: `radial-gradient(circle at center, rgba(${thirdColor}, 0.8) 0%, transparent 50%)`,
+            background: `radial-gradient(circle at center, rgba(${theme.thirdColor}, 0.8) 0%, transparent 50%)`,
             top: `calc(50% - ${size} / 2)`,
             left: `calc(50% - ${size} / 2)`,
             transformOrigin: "calc(50% + 400px) center",
           }}
-          animate={{ rotate: [0, 360], x: [0, -120, 80, 0], y: [0, 100, -40, 0] }}
+          animate={{ rotate: [0, 360], x: [0, -60, 40, 0], y: [0, 50, -20, 0] }}
           transition={{
             rotate: { duration: 25, repeat: Infinity, ease: "linear" },
             x: { duration: 14, repeat: Infinity, ease: "easeInOut" },
@@ -217,15 +217,15 @@ export const BackgroundGradientAnimation = ({
 
         {/* Blob 4 */}
         <motion.div
-          className="absolute rounded-full opacity-70"
+          className="absolute rounded-full opacity-70 will-change-transform"
           style={{
             ...gradientStyle,
-            background: `radial-gradient(circle at center, rgba(${fourthColor}, 0.8) 0%, transparent 50%)`,
+            background: `radial-gradient(circle at center, rgba(${theme.fourthColor}, 0.8) 0%, transparent 50%)`,
             top: `calc(50% - ${size} / 2)`,
             left: `calc(50% - ${size} / 2)`,
             transformOrigin: "calc(50% - 200px) center",
           }}
-          animate={{ rotate: [0, -360], x: [0, 60, -100, 0], y: [0, -60, 80, 0] }}
+          animate={{ rotate: [0, -360], x: [0, 30, -50, 0], y: [0, -30, 40, 0] }}
           transition={{
             rotate: { duration: 18, repeat: Infinity, ease: "linear" },
             x: { duration: 20, repeat: Infinity, ease: "easeInOut" },
@@ -237,7 +237,7 @@ export const BackgroundGradientAnimation = ({
         {interactive && (
           <div
             ref={interactiveRef}
-            className="absolute w-full h-full -top-1/2 -left-1/2 opacity-70"
+            className="absolute w-full h-full -top-1/2 -left-1/2 opacity-70 will-change-transform"
             style={{
               background: `radial-gradient(circle at center, rgba(${pointerColor}, 0.8) 0%, transparent 50%)`,
               mixBlendMode: blendingValue as React.CSSProperties["mixBlendMode"],
