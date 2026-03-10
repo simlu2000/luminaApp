@@ -3,7 +3,6 @@ import WeatherBoard from "../weatherBoard/WeatherBoard";
 function InfoCard({weatherData }: any) {
     return (
         <div className="
-        fixed 
         top-[10vh]
         left-2 md:left-10
         right-2 md:right-10
