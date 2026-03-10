@@ -6,7 +6,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
         return (
             <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[100] text-white flex items-center gap-2 bg-black/50 p-4 rounded-full">
                 <Loader2 className="animate-spin" />
-                <span>Caricamento meteo...</span>
+                <span>Loading weather...</span>
             </div>
         );
     }
@@ -92,7 +92,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                     </div>
                     <div className="leading-tight">
                         <h2 className="text-xl md:text-2xl font-bold tracking-tight">
-                            Rapallo
+                            {weatherData?.name ? weatherData.name : 'Genova'}
                         </h2>
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-green-400 animate-glow" />
