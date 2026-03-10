@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Intro from './Intro';
-import DashboardScreen from './components/dashboardScreen/DashboardScreen';
-import Navbar from './components/navbar/Navbar';
+import DashboardScreen from './components/DashboardScreen/DashboardScreen';
+import Navbar from './components/Navbar/Navbar';
 function App() {
   return (
     <>
