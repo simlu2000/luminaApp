@@ -14,12 +14,6 @@ function DashboardScreen() {
     const [currentLocation] = useState("Genova"); //default
     //console.log(weatherData)
 
-    const getCurrentPosition = () => {
-      return new Promise((resolve, reject) => { //richiesta permesso recupero posizione gps
-            navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
-    };
-    
     useEffect(() => {
        const fetchWeather = async () => {
         setLoading(true);
