@@ -27,7 +27,7 @@ function DashboardScreen() {
                     setWeatherData(response.data);
                     setLoading(false);
                 },
-                async (error) => {
+                async (_error) => {
                     console.log("GPS negato o non disponibile, uso città di default:", currentLocation);
                     const response = await axios.get(
                         `https://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=metric&lang=it&appid=${API_KEY}`
