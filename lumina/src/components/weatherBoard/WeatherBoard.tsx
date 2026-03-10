@@ -6,7 +6,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
         return (
             <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[100] text-white flex items-center gap-2 bg-black/50 p-4 rounded-full">
                 <Loader2 className="animate-spin" />
-                <span>Sincronizzazione meteo...</span>
+                <span>Caricamento meteo...</span>
             </div>
         );
     }
@@ -36,7 +36,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                 title: "Golden Hour in corso",
                 desc: clouds > 50
                     ? "Luce calda diffusa dalle nuvole. Ottima per ritratti senza ombre dure."
-                    : "Luce radente perfetta. Cerca i riflessi dorati sul lungomare di Rapallo."
+                    : "Luce radente perfetta. Cerca i riflessi dorati."
             };
         }
 
@@ -52,7 +52,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
         if (wind > 8) {
             return {
                 title: "Lunga Esposizione",
-                desc: "Vento teso: usa un treppiede e filtri ND per rendere l'acqua del mare come seta."
+                desc: "Vento teso: usa un treppiede e filtri ND."
             };
         }
 
