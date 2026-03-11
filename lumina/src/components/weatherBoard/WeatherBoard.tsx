@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Sun, CloudRain, Cloud, Thermometer, Moon, Camera, Loader2, Eye, Wind, Droplets } from "lucide-react";
 import { useEffect, useState } from "react";
-import { model } from '../../firebaseConfig';
+import { model } from '../../firebaseconfig';
 
 function WeatherBoard({ weatherData }: { weatherData: any }) {
 
