@@ -6,7 +6,6 @@ const ASSETS_TO_CACHE = [
   "/static/js/bundle.js",
   "/manifest.json",
   "/favicon.ico",
-  // Aggiungi qui eventuali font o icone fisse
 ];
 
 // 1. Installazione
