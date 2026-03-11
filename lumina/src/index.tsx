@@ -11,3 +11,18 @@ root.render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+// Registrazione Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const swUrl = '/serviceWorker.js';
+    navigator.serviceWorker
+      .register(swUrl)
+      .then((registration) => {
+        console.log('SW registrato con successo: ', registration.scope);
+      })
+      .catch((error) => {
+        console.log('Registrazione SW fallita: ', error);
+      });
+  });
+}

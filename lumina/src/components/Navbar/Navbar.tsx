@@ -1,5 +1,5 @@
+import { Info, Sunset } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { FaCircleInfo, FaSun } from "react-icons/fa6"; 
 
 function Navbar() {
     return (
@@ -8,10 +8,10 @@ function Navbar() {
             
             <div className="flex gap-8 items-center font-medium text-sm">
                 <Link to="/" className="hover:text-white/70 transition-colors flex items-center">
-                    <FaCircleInfo size={20} /> 
+                    <Info size={20} /> 
                 </Link>
                 <Link to="/DashboardScreen" className="hover:text-white/70 transition-colors">
-                    <FaSun size={20} /> 
+                    <Sunset size={20} /> 
                 </Link>
             </div>
         </nav>
