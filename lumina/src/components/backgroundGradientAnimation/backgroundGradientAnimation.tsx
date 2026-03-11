@@ -38,15 +38,17 @@ export const BackgroundGradientAnimation = ({
   weatherData,
 }: BackgroundGradientAnimationProps) => {
 
-  const theme = useMemo(() => {
-    if (!weatherData) return {
-      gradientBackgroundStart,
-      gradientBackgroundEnd,
-      firstColor,
-      secondColor,
-      thirdColor,
-      fourthColor,
-    }; // Tema default 
+const theme = useMemo(() => {
+    if (!weatherData?.sys?.sunrise || !weatherData?.sys?.sunset || !weatherData?.dt) {
+      return {
+        gradientBackgroundStart,
+        gradientBackgroundEnd,
+        firstColor,
+        secondColor,
+        thirdColor,
+        fourthColor,
+      };
+    }
 
     const now = weatherData.dt;
     const sunrise = weatherData.sys.sunrise;

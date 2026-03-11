@@ -15,41 +15,44 @@ function DashboardScreen() {
     //console.log(weatherData)
 
     useEffect(() => {
-       const fetchWeather = async () => {
-        setLoading(true);
-        try {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    const response = await axios.get(
-                        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&lang=it&appid=${API_KEY}`
-                    );
-                    setWeatherData(response.data);
-                    setLoading(false);
-                },
-                async (_error) => {
-                    console.log("GPS negato o non disponibile, uso città di default:", currentLocation);
-                    const response = await axios.get(
-                        `https://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=metric&lang=it&appid=${API_KEY}`
-                    );
-                    setWeatherData(response.data);
-                    setLoading(false);
-                }
-            );
-        } catch (error) {
-            console.error("Errore critico nel recupero meteo:", error);
-            setLoading(false);
-        }
-        };
 
-        fetchWeather();
+        const fetchWeatherData = async () => {
+            setLoading(true);
+            try {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => { //ok ho posizione (=try)
+                        const response = await axios.get(
+                            `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&lang=it&appid=${API_KEY}`
+                        );
+                        setWeatherData(response);
+                        setLoading(false);
+
+                    },
+
+                    async (_error) => {
+                        console.log("GPS negato o non disponibile, uso città di default:", currentLocation);
+                        const response = await axios.get(
+                            `https://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=metric&lang=it&appid=${API_KEY}`
+                        );
+                        setWeatherData(response);
+                        setLoading(false);
+
+                    }
+                )
+
+            } catch (error) {
+                console.log("Error while fetching weather data. ")
+            }
+        }
+
+        fetchWeatherData(); //chiamata ogni volta che cambia la chiave api o posizione corrente utente
 
         const interval = setInterval(() => {
-            fetchWeather();
+            fetchWeatherData();
         }, 300000);
 
         return () => clearInterval(interval);
-    }, [API_KEY, currentLocation]);
+    }, [API_KEY, currentLocation]); //al variare di chiave api, posizione corrente 
 
     if (loading) return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950">
@@ -59,7 +62,7 @@ function DashboardScreen() {
 
     return (
         <div className="min-h-screen font-sans bg-slate-950 overflow-hidden">
-            <BackgroundGradientAnimation weatherData = {weatherData}>
+            <BackgroundGradientAnimation weatherData={weatherData}>
                 <div className="relative z-50 h-full w-full overflow-y-auto px-4 pb-20">
 
                     <div className="mt-[10vh] md:mt-[15vh]">
@@ -77,7 +80,7 @@ function DashboardScreen() {
 
                     {/* Grafico */}
                     <div className="mt-10">
-                        
+
                     </div>
                 </div>
             </BackgroundGradientAnimation>
