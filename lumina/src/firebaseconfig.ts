@@ -1,20 +1,21 @@
 import { initializeApp } from 'firebase/app';
-import { getGenerativeModel } from 'firebase/ai';
+import { getAI,getGenerativeModel } from 'firebase/ai';
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyASGF8Y77s6exLjy9Uja-xUpyOmqkJCnDA",
-  authDomain: "luminaapp-5db27.firebaseapp.com",
-  projectId: "luminaapp-5db27",
-  storageBucket: "luminaapp-5db27.firebasestorage.app",
-  messagingSenderId: "826296394073",
-  appId: "1:826296394073:web:431eb9048af5a9c6e8ac48",
-  measurementId: "G-9S26WYH7JV"
+  apiKey: process.env.REACT_FIREBASE_API_KEY, 
+  authDomain: process.env.REACT_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_FIREBASE_MEASUREMENT_ID
 };
 
 // Inizializza Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inizializza il servizio Gemini
-const model = getGenerativeModel(app, { model: 'gemini-pro' }); 
+const aiService = getAI(app);
 
+// Inizializza il servizio Gemini
+const model = getGenerativeModel(aiService, { model: 'gemini-pro' }); 
 export { app, model };
