@@ -21,10 +21,11 @@ function DashboardScreen() {
             try {
                 navigator.geolocation.getCurrentPosition(
                     async (position) => { //ok ho posizione (=try)
+                        const { latitude, longitude } = position.coords;
                         const response = await axios.get(
-                            `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&lang=it&appid=${API_KEY}`
+                            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&lang=it&appid=${API_KEY}`
                         );
-                        setWeatherData(response);
+                        setWeatherData(response.data);
                         setLoading(false);
 
                     },
@@ -34,7 +35,7 @@ function DashboardScreen() {
                         const response = await axios.get(
                             `https://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=metric&lang=it&appid=${API_KEY}`
                         );
-                        setWeatherData(response);
+                        setWeatherData(response.data);
                         setLoading(false);
 
                     }
@@ -42,6 +43,7 @@ function DashboardScreen() {
 
             } catch (error) {
                 console.log("Error while fetching weather data. ")
+                setLoading(false);
             }
         }
 
