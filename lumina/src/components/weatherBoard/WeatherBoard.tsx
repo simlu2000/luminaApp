@@ -1,6 +1,12 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Sun, CloudRain, Cloud, Thermometer, Moon, Camera, Loader2, Eye, Wind, Droplets } from "lucide-react";
+import { useEffect, useState } from "react";
+import { model } from '../../firebaseConfig';
 
 function WeatherBoard({ weatherData }: { weatherData: any }) {
+
+    const [photographyAdvice, setPhotographyAdvice] = useState({ title: "Caricamento consigli...", desc: "" });
+    const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
 
     if (!weatherData || !weatherData.weather || !weatherData.weather[0]) {
         return (
@@ -21,52 +27,45 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
         }
     };
 
-    const getPhotographyAdvice = () => {
-        const now = weatherData.dt;
-        const sunrise = weatherData.sys.sunrise;
-        const sunset = weatherData.sys.sunset;
-        const clouds = weatherData.clouds.all;
-        const visibility = weatherData.visibility;
-        const wind = weatherData.wind.speed;
-        const hour = 3600;
+    useEffect(() => {
+        const fetchAdvice = async () => {
+            if (!weatherData || !weatherData.weather || !weatherData.weather[0]) {
+                setPhotographyAdvice({ title: "Dati meteo non disponibili", desc: "Attendi per i consigli." });
+                return;
+            }
 
-        if ((now >= sunrise && now < sunrise + hour) || (now >= sunset - hour && now < sunset)) {
-            return {
-                title: "Golden Hour in corso",
-                desc: clouds > 50
-                    ? "Luce calda diffusa dalle nuvole. Ottima per ritratti senza ombre dure."
-                    : "Luce radente perfetta. Cerca i riflessi dorati."
-            };
-        }
+            setIsLoadingAdvice(true);
+            try {
+                const prompt = `Considerando le seguenti condizioni meteo a ${weatherData.name}:
+                - Temperatura: ${Math.round(weatherData.main.temp)}°C (percepita: ${Math.round(weatherData.main.feels_like)}°C)
+                - Condizione generale: ${weatherData.weather[0].description}
+                - Nuvole: ${weatherData.clouds.all}%
+                - Umidità: ${weatherData.main.humidity}%
+                - Visibilità: ${(weatherData.visibility / 1000).toFixed(1)} km
+                - Velocità del vento: ${Math.round(weatherData.wind.speed * 3.6)} km/h
+                - Alba: ${new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString()}
+                - Tramonto: ${new Date(weatherData.sys.sunset * 1000).toLocaleTimeString()}
+                Forniscimi un titolo accattivante e un consiglio dettagliato per una fotografia creativa da scattare ora, basato su queste condizioni. 
+                Sii specifico con le raccomandazioni tecniche (es. esposizione, inquadratura).`;
 
-        if (visibility < 5000) {
-            return {
-                title: "Atmosfera Soft",
-                desc: "Foschia rilevata. Ottima per scatti minimalisti o bianco e nero ad alto contrasto."
-            };
-        }
+                //Chiamata Gemini
+                const result = await model.generateContent(prompt);
+                const responseText = result.response.text();
+             
+                // Parsing 
+                const [title, ...descParts] = responseText.split('. ');
+                setPhotographyAdvice({ title: title || "Consiglio fotografico", desc: descParts.join('. ') || responseText });
 
-        if (wind > 8) {
-            return {
-                title: "Lunga Esposizione",
-                desc: "Vento teso: usa un treppiede e filtri ND."
-            };
-        }
-
-        if (clouds < 10 && visibility > 9000) {
-            return {
-                title: "Cielo Terzo",
-                desc: "Visibilità massima. Punta verso l'orizzonte o prova la fotografia astronomica stasera."
-            };
-        }
-
-        return {
-            title: "Luce Neutra",
-            desc: "Condizioni stabili. Ideale per street photography e architettura nel centro storico."
+            } catch (error) {
+                console.error("Errore nel recupero dei consigli da Gemini:", error);
+                setPhotographyAdvice({ title: "Errore nel caricamento dei consigli", desc: "Riprova più tardi." });
+            } finally {
+                setIsLoadingAdvice(false);
+            }
         };
-    };
 
-    const advice = getPhotographyAdvice();
+        fetchAdvice();
+    }, [weatherData]);
 
     return (
         <div className="flex flex-col gap-4 p-4 md:p-6 text-white rounded-[2.5rem]">
@@ -209,9 +208,9 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                     <Camera className="w-5 h-5 md:w-7 md:h-7 text-indigo-300" />
                 </div>
                 <div className="flex-1">
-                    <p className="text-sm md:text-lg lg:text-xl font-bold">{advice.title}</p>
+                    <p className="text-sm md:text-lg lg:text-xl font-bold">{photographyAdvice.title}</p>
                     <p className="text-[10px] md:text-base opacity-60 leading-tight">
-                        {advice.desc}
+                        {isLoadingAdvice ? "Generazione consigli..." : photographyAdvice.desc}
                     </p>
                 </div>
                 <button className="text-[10px] md:text-sm font-bold bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full border border-white/10 transition-all whitespace-nowrap">
