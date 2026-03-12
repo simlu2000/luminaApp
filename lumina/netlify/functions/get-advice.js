@@ -37,7 +37,7 @@ exports.handler = async (event, context) => {
 
     // 2. Inizializzazione Gemini
     const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     // 3. Creazione del Prompt (ottimizzato per il tuo parsing in React)
     const prompt = `Sei un fotografo professionista esperto di luce a ${weatherData.name}.
