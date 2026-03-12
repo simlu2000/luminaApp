@@ -68,7 +68,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
     }, [weatherData]);
 
     return (
-        <div className="flex flex-col gap-4 p-4 md:p-6 text-white rounded-[2.5rem]">
+        <div className="flex flex-col w-full gap-4 p-4 md:p-6 text-white rounded-[2.5rem]">
             {/* Sezione Superiore: Info Località e Temperatura */}
             <div className="flex justify-between items-center px-2">
                 <div className="flex items-center gap-3 md:gap-4">
