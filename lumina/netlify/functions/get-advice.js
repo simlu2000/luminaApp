@@ -8,14 +8,14 @@ exports.handler = async (event) => {
 
   try {
     const { weatherData } = JSON.parse(event.body);
-    const API_KEY = process.env.GEMINI_API_KEY;
+    const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
-    if (!API_KEY) throw new Error("Chiave API mancante su Netlify");
+    // Log di controllo (vedrai le prime 4 lettere nei log di Netlify)
+    console.log("Controllo Key:", API_KEY ? API_KEY.substring(0, 4) + "..." : "MANCANTE");
 
-    // Endpoint V1 STABILE (evitiamo v1beta che dà errore 404)
     const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-    const prompt = `Sei un fotografo professionista. Analizza il meteo a ${weatherData.name} (${weatherData.weather[0].description}) e dai un consiglio tecnico (ISO, apertura) in italiano. Inizia con un titolo breve seguito da un punto.`;
+    const prompt = `Sei un fotografo a ${weatherData.name}. Meteo: ${weatherData.weather[0].description}. Dai un titolo breve e un consiglio tecnico ISO/Apertura in italiano. Sii conciso.`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -27,7 +27,10 @@ exports.handler = async (event) => {
 
     const data = await response.json();
     
-    if (!response.ok) throw new Error(data.error?.message || "Errore API Google");
+    if (!response.ok) {
+        console.error("Errore Google:", data);
+        throw new Error(data.error?.message || "Errore Google API");
+    }
 
     const adviceText = data.candidates[0].content.parts[0].text;
 
@@ -37,7 +40,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ advice: adviceText }),
     };
   } catch (error) {
-    console.error("ERRORE:", error.message);
+    console.error("Crash Funzione:", error.message);
     return {
       statusCode: 500,
       headers,
