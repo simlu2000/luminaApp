@@ -29,36 +29,28 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
 
     useEffect(() => {
         const fetchAdvice = async () => {
-            if (!weatherData || !weatherData.weather || !weatherData.weather[0]) {
-                setPhotographyAdvice({ title: "Dati meteo non disponibili", desc: "Attendi per i consigli." });
-                return;
-            }
+            if (!weatherData?.weather?.[0]) return;
 
             setIsLoadingAdvice(true);
             try {
-                const prompt = `Considerando le seguenti condizioni meteo a ${weatherData.name}:
-                - Temperatura: ${Math.round(weatherData.main.temp)}°C (percepita: ${Math.round(weatherData.main.feels_like)}°C)
-                - Condizione generale: ${weatherData.weather[0].description}
-                - Nuvole: ${weatherData.clouds.all}%
-                - Umidità: ${weatherData.main.humidity}%
-                - Visibilità: ${(weatherData.visibility / 1000).toFixed(1)} km
-                - Velocità del vento: ${Math.round(weatherData.wind.speed * 3.6)} km/h
-                - Alba: ${new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString()}
-                - Tramonto: ${new Date(weatherData.sys.sunset * 1000).toLocaleTimeString()}
-                Forniscimi un titolo accattivante e un consiglio dettagliato per una fotografia creativa da scattare ora, basato su queste condizioni. 
-                Sii specifico con le raccomandazioni tecniche (es. esposizione, inquadratura).`;
+                // Chiamata a backend netlify
+                const response = await fetch('/.netlify/functions/get-advice', {
+                    method: 'POST',
+                    body: JSON.stringify({ weatherData: weatherData })
+                });
+                const data = await response.json();
+                const responseText = data.advice; //TESTO DA PARSARE
 
-                //Chiamata Gemini
-                const result = await model.generateContent(prompt);
-                const responseText = result.response.text();
-             
-                // Parsing 
+                // Parsing
                 const [title, ...descParts] = responseText.split('. ');
-                setPhotographyAdvice({ title: title || "Consiglio fotografico", desc: descParts.join('. ') || responseText });
+                setPhotographyAdvice({
+                    title: title || "Consiglio fotografico",
+                    desc: descParts.join('. ') || responseText
+                });
 
             } catch (error) {
-                console.error("Errore nel recupero dei consigli da Gemini:", error);
-                setPhotographyAdvice({ title: "Errore nel caricamento dei consigli", desc: "Riprova più tardi." });
+                console.error("Errore:", error);
+                setPhotographyAdvice({ title: "Errore", desc: "Riprova più tardi." });
             } finally {
                 setIsLoadingAdvice(false);
             }

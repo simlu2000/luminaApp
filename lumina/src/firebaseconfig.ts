@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAI,getGenerativeModel } from 'firebase/ai';
+import { getAI,getGenerativeModel, GoogleAIBackend } from 'firebase/ai';
 
 export const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY, 
@@ -12,10 +12,10 @@ export const firebaseConfig = {
 };
 
 // Inizializza Firebase
-const app = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
-const aiService = getAI(app);
+// Initialize the Gemini Developer API backend service
+const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
 
-// Inizializza il servizio Gemini
-const model = getGenerativeModel(aiService, { model: 'gemini-pro' }); 
-export { app, model };
+// Create a `GenerativeModel` instance with a model that supports your use case
+const model = getGenerativeModel(ai, { model: "gemini-3-flash-preview" });
