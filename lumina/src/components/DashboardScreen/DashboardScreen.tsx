@@ -73,7 +73,7 @@ function DashboardScreen() {
                         </div>
 
                         {/* Badge Località */}
-                        <div className="bg-black/10 backdrop-blur-md px-8 py-4 mt-6 md:mt-0 rounded-full border border-white/20 text-white text-xl md:text-2xl font-bold shadow-xl flex items-center gap-3">
+                        <div className="bg-black/10 backdrop-blur-md px-8 py-4 mt-6 md:mt-0 rounded-full border border-white/20 text-white text-xl md:text-2xl font-bold transform transition-all hover:scale-[1.02] shadow-xl flex items-center gap-3">
                             <MapPin className="w-6 h-6 text-blue-400" />
                             <span>{weatherData?.name || "Ricerca posizione..."}</span>
                         </div>
@@ -90,7 +90,7 @@ function DashboardScreen() {
                             </div>
 
                             {/* Widget Extra: Quick Status */}
-                            <div className="p-8 bg-black/10 backdrop-blur-xl rounded-[3rem] border border-white/10 text-white shadow-2xl">
+                            <div className="p-8 bg-black/10 backdrop-blur-xl rounded-[3rem] border border-white/10 text-white shadow-2xl transform transition-all hover:scale-[1.02]">
                                 <h4 className="text-sm md:text-base uppercase tracking-widest text-white/40 font-black mb-6">Visibilità Sensore</h4>
                                 <div className="flex items-center justify-between mb-4">
                                     <span className="text-3xl md:text-xl font-light tracking-tighter">
