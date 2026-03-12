@@ -33,10 +33,9 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
             setIsLoadingAdvice(true);
             try {
                 //chiamata alla netlify function
-                const response = await fetch('https://luminaappshooting.netlify.app/.netlify/functions/get-advice', {
+                const response = await fetch('/.netlify/functions/get-advice', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ weatherData: weatherData })
+                    body: JSON.stringify({ weatherData })
                 });
 
                 if (!response.ok) throw new Error("Errore dal server Netlify");
