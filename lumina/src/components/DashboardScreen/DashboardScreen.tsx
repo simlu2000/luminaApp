@@ -10,7 +10,7 @@ function DashboardScreen() {
     const [weatherData, setWeatherData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
-    const API_KEY = process.env.WEATHER_API_KEY;
+    const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
 
     const [currentLocation] = useState("Genova"); //default
 
