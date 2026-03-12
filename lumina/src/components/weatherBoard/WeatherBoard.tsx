@@ -26,37 +26,51 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
         }
     };
 
-    useEffect(() => {
-        const fetchAdvice = async () => {
-            if (!weatherData?.weather?.[0]) return;
+  useEffect(() => {
+    const fetchAdvice = async () => {
+        if (!weatherData?.weather?.[0]) return;
 
-            setIsLoadingAdvice(true);
-            try {
-                // Chiamata a backend netlify
-                const response = await fetch('/.netlify/functions/get-advice', {
-                    method: 'POST',
-                    body: JSON.stringify({ weatherData: weatherData })
-                });
-                const data = await response.json();
-                const responseText = data.advice; //TESTO DA PARSARE
+        setIsLoadingAdvice(true);
+        try {
+            //chiamata alla netlify function
+            const response = await fetch('/.netlify/functions/get-advice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ weatherData: weatherData })
+            });
 
-                // Parsing
+            if (!response.ok) throw new Error("Errore dal server Netlify");
+
+            const data = await response.json();
+            const responseText = data.advice; // output gem
+
+            //Parsing
+            if (responseText.includes('.')) {
                 const [title, ...descParts] = responseText.split('. ');
                 setPhotographyAdvice({
-                    title: title || "Consiglio fotografico",
-                    desc: descParts.join('. ') || responseText
+                    title: title.trim(),
+                    desc: descParts.join('. ').trim()
                 });
-
-            } catch (error) {
-                console.error("Errore:", error);
-                setPhotographyAdvice({ title: "Errore", desc: "Riprova più tardi." });
-            } finally {
-                setIsLoadingAdvice(false);
+            } else {
+                setPhotographyAdvice({
+                    title: "Consiglio Fotografico",
+                    desc: responseText
+                });
             }
-        };
 
-        fetchAdvice();
-    }, [weatherData]);
+        } catch (error) {
+            console.error("Errore nel recupero dei consigli:", error);
+            setPhotographyAdvice({ 
+                title: "Consiglio non disponibile", 
+                desc: "Controlla la connessione o la configurazione di Netlify." 
+            });
+        } finally {
+            setIsLoadingAdvice(false);
+        }
+    };
+
+    fetchAdvice();
+}, [weatherData]);
 
     return (
         <div className="flex flex-col w-full gap-4 p-4 md:p-6 text-white rounded-[2.5rem]">
