@@ -1,48 +1,49 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
 exports.handler = async (event) => {
-    const headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-    };
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
 
-    if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
+  if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
 
-    try {
-        const { weatherData } = JSON.parse(event.body);
+  try {
+    const { weatherData } = JSON.parse(event.body);
+    const API_KEY = process.env.GEMINI_API_KEY;
 
-        // Inizializzazione esplicita
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    // Usiamo direttamente l'endpoint V1 (stabile) invece di V1BETA
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-        // Specifichiamo il modello 1.5-flash
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-        });
+    const prompt = `Sei un fotografo a ${weatherData.name}. 
+    Meteo: ${weatherData.weather[0].description}. 
+    Analizza il luogo e dai un titolo breve e un consiglio tecnico ISO/Apertura in italiano.`;
 
-        const prompt = `Sei un fotografo professionista a ${weatherData.name}.
-        Meteo attuale: ${weatherData.weather[0].description}, ${Math.round(weatherData.main.temp)}°C.
-        
-        ISTRUZIONI RISPOSTA:
-        - Inizia con un TITOLO BREVE (max 5 parole) seguito da un punto fermo.
-        - Dopo il punto, scrivi un CONSIGLIO TECNICO (ISO, apertura, filtri) di 2-3 frasi.
-        - Personalizza il consiglio: se è un posto di mare o lago (come ${weatherData.name}), parla di riflessi e lungomare; se è montagna di vette; se è città di architettura.
-        - Rispondi in ITALIANO.`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
 
-        // Generazione contenuto
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
+    const data = await response.json();
 
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({ advice: text }),
-        };
-    } catch (error) {
-        console.error("ERRORE DETTAGLIATO:", error);
-        return {
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({ error: error.message }),
-        };
+    if (!response.ok) {
+      throw new Error(data.error?.message || "Errore API Google");
     }
+
+    const adviceText = data.candidates[0].content.parts[0].text;
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ advice: adviceText }),
+    };
+  } catch (error) {
+    console.error("ERRORE:", error.message);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: error.message }),
+    };
+  }
 };
