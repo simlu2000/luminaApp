@@ -32,19 +32,27 @@ self.addEventListener("activate", (event) => {
 // 3. Strategia Fetch: Stale-While-Revalidate
 // Serve i file dalla cache subito, ma cerca aggiornamenti in background
 self.addEventListener("fetch", (event) => {
-  // Ignora le richieste API (dati meteo sempre receneti)
-  if (event.request.url.includes("api.openweathermap.org")) {
-    return; 
+  // 1. Ignora richieste non-GET (come la POST a get-advice) e le API meteo
+  if (event.request.method !== "GET" || event.request.url.includes("api.openweathermap.org") || event.request.url.includes(".netlify/functions/")) {
+    return;
   }
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
+        // Controlliamo che la risposta sia valida prima di clonarla
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+
+        const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
+          cache.put(event.request, responseToCache);
         });
+
         return networkResponse;
-      });
+      }).catch(() => cachedResponse); // Se il network fallisce, usa la cache
+
       return cachedResponse || fetchPromise;
     })
   );
