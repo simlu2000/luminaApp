@@ -4,4 +4,3 @@
 
 [functions]
   directory = "netlify/functions"
-  # Abbiamo rimosso node_bundle = true perché causava il crash

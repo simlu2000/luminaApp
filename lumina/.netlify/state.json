@@ -1,14 +1,20 @@
 {
 	"geolocation": {
 		"data": {
+			"city": "Genoa",
 			"country": {
 				"code": "IT",
 				"name": "Italy"
 			},
+			"subdivision": {
+				"code": "42",
+				"name": "Liguria"
+			},
 			"timezone": "Europe/Rome",
-			"latitude": 43.1479,
-			"longitude": 12.1097
+			"latitude": 44.4071,
+			"longitude": 8.95,
+			"postalCode": "16157"
 		},
-		"timestamp": 1773312532230
+		"timestamp": 1773406331505
 	}
 }
