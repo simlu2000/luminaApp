@@ -42,7 +42,6 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
 
                 const data = await response.json();
                 const responseText = data.advice; // output gem
-
                 //Parsing
                 if (responseText.includes('.')) {
                     const [title, ...descParts] = responseText.split('. ');
@@ -56,6 +55,8 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                         desc: responseText
                     });
                 }
+                console.log("Gemini say: ", data);
+
 
             } catch (error) {
                 console.error("Errore nel recupero dei consigli:", error);
