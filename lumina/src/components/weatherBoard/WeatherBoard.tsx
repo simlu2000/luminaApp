@@ -225,9 +225,10 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                 </div>
             </div>
 
-            {/* Card 4: Consigli Scatto Dinamici */}
-            <div className="flex flex-col gap-4 bg-gradient-to-br from-indigo-500/15 to-purple-500/15 p-5 md:p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-md shadow-2xl">
+            {/* Card 4: Consigli Fotografici Dinamici */}
+            <div className="flex flex-col gap-5 bg-gradient-to-br from-indigo-500/15 to-purple-500/15 p-6 md:p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-md shadow-2xl">
 
+                {/* Header */}
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-indigo-500/20 rounded-2xl">
@@ -245,45 +246,43 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                     </div>
                 </div>
 
-                {!isLoadingAdvice && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                {/* Contenuto */}
+                {!isLoadingAdvice ? (
+                    <div className="flex flex-col gap-4 mt-4">
 
-                        {/* Box Setup Tecnico */}
+                        {/* Setup Tecnico */}
                         <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="flex items-center gap-2 mb-2">
                                 <Thermometer className="w-4 h-4 text-orange-400" />
                                 <span className="text-[10px] font-bold uppercase opacity-60">Setup Tecnico</span>
                             </div>
-                            <p className="text-sm text-indigo-100 leading-relaxed italic">
-                                {photographyAdvice.setup}
-                            </p>
+                            <p className="text-sm text-indigo-100 leading-relaxed italic">{photographyAdvice.setup}</p>
                         </div>
 
+                        {/* Soggetto / Scena Consigliata */}
                         <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="flex items-center gap-2 mb-2">
                                 <Eye className="w-4 h-4 text-cyan-400" />
                                 <span className="text-[10px] font-bold uppercase opacity-60">Soggetto Consigliato</span>
                             </div>
-                            <p className="text-sm text-cyan-50 leading-relaxed">
-                                {photographyAdvice.scene}
+                            <p className="text-sm text-cyan-50 leading-relaxed">{photographyAdvice.scene}</p>
+                        </div>
+
+                        {/* Trucco / Consiglio Speciale */}
+                        <div className="p-4 bg-indigo-500/10 rounded-2xl border-l-4 border-indigo-400/50">
+                            <p className="text-sm leading-relaxed text-white/80">
+                                <span className="font-bold text-indigo-300">Il trucco: </span>
+                                {photographyAdvice.trick}
                             </p>
                         </div>
-                    </div>
-                )}
 
-                {!isLoadingAdvice && (
-                    <div className="mt-2 p-4 bg-indigo-500/10 rounded-2xl border-l-4 border-indigo-400/50">
-                        <p className="text-sm leading-relaxed text-white/80">
-                            <span className="font-bold text-indigo-300">Il trucco: </span>
-                            {photographyAdvice.trick}
-                        </p>
                     </div>
-                )}
-
-                {isLoadingAdvice && (
+                ) : (
                     <div className="flex flex-col items-center py-10 gap-3">
                         <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
-                        <p className="text-sm opacity-50 animate-pulse">Gemini sta studiando lo scatto migliore per {weatherData.name}...</p>
+                        <p className="text-sm opacity-50 animate-pulse">
+                            Gemini sta studiando lo scatto migliore per {weatherData.name}...
+                        </p>
                     </div>
                 )}
             </div>
