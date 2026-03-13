@@ -21,7 +21,6 @@ function InfoCard({ weatherData }: any) {
         mx-auto //centratura
         max-w-6xl           // Evita troppo larga su schermi max
         "
-            style={{ height: '80vh' }}
         >
             <WeatherBoard weatherData={weatherData} />
 

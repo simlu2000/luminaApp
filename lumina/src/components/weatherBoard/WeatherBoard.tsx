@@ -4,8 +4,12 @@ import { useEffect, useState } from "react";
 
 function WeatherBoard({ weatherData }: { weatherData: any }) {
 
-    const [photographyAdvice, setPhotographyAdvice] = useState({ title: "Caricamento consigli...", desc: "" });
-    const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
+    const [photographyAdvice, setPhotographyAdvice] = useState({
+        title: "Caricamento consigli...",
+        setup: "",
+        scene: "",
+        trick: ""
+    }); const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
 
     if (!weatherData || !weatherData.weather || !weatherData.weather[0]) {
         return (
@@ -32,37 +36,51 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
 
             setIsLoadingAdvice(true);
             try {
-                //chiamata alla netlify function
                 const response = await fetch('/.netlify/functions/get-advice', {
                     method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ weatherData })
                 });
 
                 if (!response.ok) throw new Error("Errore dal server Netlify");
 
                 const data = await response.json();
-                const responseText = data.advice; // output gem
-                //Parsing
-                if (responseText.includes('.')) {
-                    const [title, ...descParts] = responseText.split('. ');
+                const responseText = data.advice;
+
+                // 1. rimozione ** e sostituzione con stringa vuota 
+                const textWithoutStars = responseText.replace(/\*\*/g, "");
+
+                // 2. rimozione introduzioni gemini
+                const cleanText = textWithoutStars.replace(/^(.*?)(?=1\.)/s, "").trim();
+
+                // 3. Parsing Avanzato: split basato sulla numerazione "1. TITOLO:", "2. SETUP:", ecc.
+                const sections = cleanText.split(/\d\.\s+.*?:/g).filter(Boolean);
+                if (sections.length >= 4) {
                     setPhotographyAdvice({
-                        title: title.trim(),
-                        desc: descParts.join('. ').trim()
+                        title: sections[0].trim(),
+                        setup: sections[1].trim(),
+                        scene: sections[2].trim(),
+                        trick: sections[3].trim()
                     });
                 } else {
+                    // Fallback se Gemini risponde con un formato diverso
                     setPhotographyAdvice({
                         title: "Consiglio Fotografico",
-                        desc: responseText
+                        setup: "Parametri automatici consigliati",
+                        scene: responseText,
+                        trick: "Sperimenta con diverse angolazioni."
                     });
                 }
-                console.log("Gemini say: ", data);
 
+                console.log("Gemini parsed data: ", sections);
 
             } catch (error) {
                 console.error("Errore nel recupero dei consigli:", error);
                 setPhotographyAdvice({
-                    title: "Consiglio non disponibile",
-                    desc: "Controlla la connessione o la configurazione di Netlify."
+                    title: "Servizio non disponibile",
+                    setup: "N/A",
+                    scene: "Non è stato possibile caricare i consigli al momento.",
+                    trick: "Riprova più tardi."
                 });
             } finally {
                 setIsLoadingAdvice(false);
@@ -208,19 +226,66 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
             </div>
 
             {/* Card 4: Consigli Scatto Dinamici */}
-            <div className="flex items-center gap-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-4 md:p-6 rounded-2xl border border-white/5">
-                <div className="p-2 bg-white/10 rounded-lg flex-shrink-0">
-                    <Camera className="w-5 h-5 md:w-7 md:h-7 text-indigo-300" />
+            <div className="flex flex-col gap-4 bg-gradient-to-br from-indigo-500/15 to-purple-500/15 p-5 md:p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-md shadow-2xl">
+
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="p-3 bg-indigo-500/20 rounded-2xl">
+                            <Camera className="w-6 h-6 text-indigo-300" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Pro Advice</p>
+                            <h3 className="text-lg md:text-xl font-bold text-white tracking-tight">
+                                {isLoadingAdvice ? "Analizzando la luce..." : photographyAdvice.title}
+                            </h3>
+                        </div>
+                    </div>
+                    <div className="hidden md:block px-4 py-2 bg-white/5 rounded-full border border-white/10 text-xs font-medium">
+                        {Math.round(weatherData.clouds.all)}% Clouds
+                    </div>
                 </div>
-                <div className="flex-1">
-                    <p className="text-sm md:text-lg lg:text-xl font-bold">{photographyAdvice.title}</p>
-                    <p className="text-[10px] md:text-base opacity-60 leading-tight">
-                        {isLoadingAdvice ? "Generazione consigli..." : photographyAdvice.desc}
-                    </p>
-                </div>
-                <button className="text-[10px] md:text-sm font-bold bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full border border-white/10 transition-all whitespace-nowrap">
-                    {Math.round(weatherData.clouds.all)}% Clouds
-                </button>
+
+                {!isLoadingAdvice && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+
+                        {/* Box Setup Tecnico */}
+                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Thermometer className="w-4 h-4 text-orange-400" />
+                                <span className="text-[10px] font-bold uppercase opacity-60">Setup Tecnico</span>
+                            </div>
+                            <p className="text-sm text-indigo-100 leading-relaxed italic">
+                                {photographyAdvice.setup}
+                            </p>
+                        </div>
+
+                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Eye className="w-4 h-4 text-cyan-400" />
+                                <span className="text-[10px] font-bold uppercase opacity-60">Soggetto Consigliato</span>
+                            </div>
+                            <p className="text-sm text-cyan-50 leading-relaxed">
+                                {photographyAdvice.scene}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {!isLoadingAdvice && (
+                    <div className="mt-2 p-4 bg-indigo-500/10 rounded-2xl border-l-4 border-indigo-400/50">
+                        <p className="text-sm leading-relaxed text-white/80">
+                            <span className="font-bold text-indigo-300">Il trucco: </span>
+                            {photographyAdvice.trick}
+                        </p>
+                    </div>
+                )}
+
+                {isLoadingAdvice && (
+                    <div className="flex flex-col items-center py-10 gap-3">
+                        <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+                        <p className="text-sm opacity-50 animate-pulse">Gemini sta studiando lo scatto migliore per {weatherData.name}...</p>
+                    </div>
+                )}
             </div>
         </div>
     );
