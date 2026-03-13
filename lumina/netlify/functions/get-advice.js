@@ -20,8 +20,8 @@ exports.handler = async (event) => {
 
         //console.log("Controllo Key:", API_KEY ? API_KEY.substring(0, 4) + "..." : "MANCANTE");
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
-
+        //const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${API_KEY}`;
         const city = weatherData?.name || "città sconosciuta";
         const description = weatherData?.weather?.[0]?.description || "condizioni meteo sconosciute";
         //console.log("DATA TO PROMPT: ", city, " ", description);
