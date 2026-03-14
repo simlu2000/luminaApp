@@ -75,7 +75,7 @@ function DashboardScreen() {
                         {/* Badge Località */}
                         <div className="bg-black/10 backdrop-blur-md px-8 py-4 mt-6 md:mt-0 rounded-full border border-white/20 text-white text-xl md:text-2xl font-bold transform transition-all hover:scale-[1.02] shadow-xl flex items-center gap-3">
                             <MapPin className="w-6 h-6 text-blue-400" />
-                            <span>{weatherData?.name || "Ricerca posizione..."}</span>
+                            <span>{weatherData?.name || "Searching position..."}</span>
                         </div>
                     </header>
 
@@ -91,16 +91,14 @@ function DashboardScreen() {
 
                             {/* Widget Extra: Quick Status */}
                             <div className="p-8 bg-black/10 backdrop-blur-xl rounded-[3rem] border border-white/10 text-white shadow-2xl transform transition-all hover:scale-[1.02]">
-                                <h4 className="text-sm md:text-base uppercase tracking-widest text-white/40 font-black mb-6">Visibilità Sensore</h4>
+                                <h4 className="text-sm md:text-base uppercase tracking-widest text-white/40 font-black mb-6">Visibility</h4>
                                 <div className="flex items-center justify-between mb-4">
                                     <span className="text-3xl md:text-xl font-light tracking-tighter">
                                         {weatherData?.visibility / 1000}km
                                     </span>
                                     <div className={`h-4 w-16 rounded-full shadow-inner ${weatherData?.visibility > 8000 ? 'bg-green-400 shadow-green-500/50' : 'bg-orange-400 shadow-orange-500/50'}`} />
                                 </div>
-                                <p className="text-base md:text-xl mt-4 opacity-70 leading-relaxed font-medium">
-                                    Condizioni ottimali per lenti 85mm+
-                                </p>
+                
                             </div>
                         </div>
 

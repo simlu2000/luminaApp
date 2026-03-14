@@ -26,7 +26,7 @@ exports.handler = async (event) => {
         const description = weatherData?.weather?.[0]?.description || "condizioni meteo sconosciute";
         //console.log("DATA TO PROMPT: ", city, " ", description);
 
-        const prompt = `
+        /*const prompt = `
             Sei un fotografo professionista esperto di travel photography. 
             Ti trovi a ${weatherData.name}. Il meteo attuale è: ${weatherData.weather[0].description}.
 
@@ -38,9 +38,23 @@ exports.handler = async (event) => {
             4. TRUCCO: Un segreto professionale per rendere la foto emozionante.
 
             Sii estremamente sintetico (massimo 2 frasi per punto). Usa un tono pratico, ispirazionale e professionale. Rispondi in italiano.
-            `;
+            `; */
         //console.log("PROMPT TO GEMINI: ", prompt);
 
+        const prompt = `
+            You are a professional photographer specialized in travel photography.
+            You are currently in ${weatherData.name}. The current weather is: ${weatherData.weather[0].description}.
+
+            Based on your knowledge of the location ${weatherData.name} (identify whether it is a seaside, mountain, city, or lake location) and the current weather and lighting conditions, provide the following advice:
+
+            1. TITLE: A short and creative title for the shot.
+            2. SETUP: Recommended technical settings (ISO, Aperture, Shutter Speed) suitable for the current light.
+            3. SCENE: Suggest a specific subject or framing that enhances ${weatherData.name} with this weather (e.g., reflections, urban perspectives, natural details).
+            4. TRICK: A professional secret to make the photo more emotional and impactful.
+
+            Be extremely concise (maximum 2 sentences per point). Use a practical, inspirational, and professional tone. Respond in Italian.
+            `;
+            
         const response = await fetch(url, {
             method: "POST",
             headers: {

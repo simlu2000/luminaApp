@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 function WeatherBoard({ weatherData }: { weatherData: any }) {
 
     const [photographyAdvice, setPhotographyAdvice] = useState({
-        title: "Caricamento consigli...",
+        title: "Loading tips...",
         setup: "",
         scene: "",
         trick: ""
@@ -42,7 +42,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                     body: JSON.stringify({ weatherData })
                 });
 
-                if (!response.ok) throw new Error("Errore dal server Netlify");
+                if (!response.ok) throw new Error("Error of Netlify server");
 
                 const data = await response.json();
                 const responseText = data.advice;
@@ -65,22 +65,22 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                 } else {
                     // Fallback se Gemini risponde con un formato diverso
                     setPhotographyAdvice({
-                        title: "Consiglio Fotografico",
-                        setup: "Parametri automatici consigliati",
+                        title: "Photo tips",
+                        setup: "Recommended automatic parameters",
                         scene: responseText,
-                        trick: "Sperimenta con diverse angolazioni."
+                        trick: "Experiment with different angles."
                     });
                 }
 
                 console.log("Gemini parsed data: ", sections);
 
             } catch (error) {
-                console.error("Errore nel recupero dei consigli:", error);
+                console.error("Error while loading tips.", error);
                 setPhotographyAdvice({
-                    title: "Servizio non disponibile",
+                    title: "Service not available",
                     setup: "N/A",
-                    scene: "Non è stato possibile caricare i consigli al momento.",
-                    trick: "Riprova più tardi."
+                    scene: "Error while loading tips",
+                    trick: "Retry later."
                 });
             } finally {
                 setIsLoadingAdvice(false);
@@ -119,7 +119,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                         </span>
                     </div>
                     <p className="text-[10px] md:text-sm opacity-40">
-                        Percepiti: {weatherData?.main?.feels_like ? Math.round(weatherData.main.feels_like) : "--"}°C
+                        Perceived: {weatherData?.main?.feels_like ? Math.round(weatherData.main.feels_like) : "--"}°C
                     </p>
                 </div>
             </div>
@@ -133,19 +133,19 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                         {
                             time: new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                             icon: <Sun className="w-5 h-5 md:w-7 md:h-7 text-orange-300" />,
-                            label: "Alba",
+                            label: "Sunrise",
                             active: false
                         },
                         {
                             time: new Date(weatherData.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                             icon: getWeatherIcon(weatherData.weather[0].main),
-                            label: "Ora",
+                            label: "Now",
                             active: true
                         },
                         {
                             time: new Date(weatherData.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                             icon: <Moon className="w-5 h-5 md:w-7 md:h-7 text-indigo-300" />,
-                            label: "Tramonto",
+                            label: "Sunset",
                             active: false
                         }
                     ].map((item, index) => (
@@ -191,7 +191,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                             <Droplets className="w-5 h-5 md:w-6 md:h-6 text-blue-300" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-[10px] md:text-sm font-semibold uppercase opacity-50 tracking-wider">Umidità</p>
+                            <p className="text-[10px] md:text-sm font-semibold uppercase opacity-50 tracking-wider">Humidity</p>
                             <p className="text-sm md:text-xl lg:text-2xl font-medium">{weatherData?.main?.humidity}%</p>
                         </div>
                     </div>
@@ -201,7 +201,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                             <Eye className="w-5 h-5 md:w-6 md:h-6 text-cyan-300" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-[10px] md:text-sm font-semibold uppercase opacity-50 tracking-wider">Visibilità</p>
+                            <p className="text-[10px] md:text-sm font-semibold uppercase opacity-50 tracking-wider">Visibility</p>
                             <p className="text-sm md:text-xl lg:text-2xl font-medium">
                                 {weatherData?.visibility ? (weatherData.visibility / 1000).toFixed(1) : "--"} km
                             </p>
@@ -214,7 +214,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                         <Wind className="w-5 h-5 md:w-6 md:h-6 text-blue-300" />
                     </div>
                     <div className="flex-1">
-                        <p className="text-[10px] md:text-sm font-semibold uppercase opacity-50 tracking-wider">Vento</p>
+                        <p className="text-[10px] md:text-sm font-semibold uppercase opacity-50 tracking-wider">Wind</p>
                         <p className="text-sm md:text-xl lg:text-2xl font-medium">
                             {weatherData?.wind?.speed ? Math.round(weatherData.wind.speed * 3.6) : "--"} km/h
                         </p>
