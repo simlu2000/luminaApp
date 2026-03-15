@@ -104,9 +104,9 @@ export default function SunPositionChart({ weatherData }: { weatherData: any }) 
     <div className="w-full bg-black/20 backdrop-blur-xl p-6 rounded-[2.5rem] border border-white/10 shadow-2xl">
       <div className="flex justify-between items-end mb-4">
         <div>
-          <h3 className="text-white font-bold text-lg">Percorso Solare</h3>
+          <h3 className="text-white font-bold text-lg">Solar path</h3>
           <p className="text-white/50 text-[10px] uppercase tracking-widest font-semibold">
-            {weatherData.name || 'Località'} • Dinamica Luce
+            {weatherData.name || 'Località'} • Dynamic light
           </p>
         </div>
         <div className="text-right">
@@ -123,13 +123,13 @@ export default function SunPositionChart({ weatherData }: { weatherData: any }) 
 
       <div className="grid grid-cols-2 gap-4 mt-4">
         <div className="bg-white/5 p-3 rounded-2xl border border-white/5 flex flex-col items-center">
-            <p className="text-[9px] text-white/40 uppercase font-bold tracking-tighter">Alba</p>
+            <p className="text-[9px] text-white/40 uppercase font-bold tracking-tighter">Sunrise</p>
             <p className="text-sm text-orange-300 font-bold">
                 {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
             </p>
         </div>
         <div className="bg-white/5 p-3 rounded-2xl border border-white/5 flex flex-col items-center">
-            <p className="text-[9px] text-white/40 uppercase font-bold tracking-tighter">Tramonto</p>
+            <p className="text-[9px] text-white/40 uppercase font-bold tracking-tighter">Sunset</p>
             <p className="text-sm text-indigo-300 font-bold">
                 {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
             </p>

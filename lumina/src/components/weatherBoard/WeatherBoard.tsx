@@ -237,7 +237,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                         <div>
                             <p className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Pro Advice</p>
                             <h3 className="text-lg md:text-xl font-bold text-white tracking-tight">
-                                {isLoadingAdvice ? "Analizzando la luce..." : photographyAdvice.title}
+                                {isLoadingAdvice ? "Studying the light..." : photographyAdvice.title}
                             </h3>
                         </div>
                     </div>
@@ -254,7 +254,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                         <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="flex items-center gap-2 mb-2">
                                 <Thermometer className="w-4 h-4 text-orange-400" />
-                                <span className="text-[10px] font-bold uppercase opacity-60">Setup Tecnico</span>
+                                <span className="text-[10px] font-bold uppercase opacity-60">Technical Setup</span>
                             </div>
                             <p className="text-sm text-indigo-100 leading-relaxed italic">{photographyAdvice.setup}</p>
                         </div>
@@ -263,7 +263,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                         <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="flex items-center gap-2 mb-2">
                                 <Eye className="w-4 h-4 text-cyan-400" />
-                                <span className="text-[10px] font-bold uppercase opacity-60">Soggetto Consigliato</span>
+                                <span className="text-[10px] font-bold uppercase opacity-60">Recommended Subject</span>
                             </div>
                             <p className="text-sm text-cyan-50 leading-relaxed">{photographyAdvice.scene}</p>
                         </div>
@@ -271,7 +271,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                         {/* Trucco / Consiglio Speciale */}
                         <div className="p-4 bg-indigo-500/10 rounded-2xl border-l-4 border-indigo-400/50">
                             <p className="text-sm leading-relaxed text-white/80">
-                                <span className="font-bold text-indigo-300">Il trucco: </span>
+                                <span className="font-bold text-indigo-300">The main tip: </span>
                                 {photographyAdvice.trick}
                             </p>
                         </div>
@@ -281,7 +281,7 @@ function WeatherBoard({ weatherData }: { weatherData: any }) {
                     <div className="flex flex-col items-center py-10 gap-3">
                         <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
                         <p className="text-sm opacity-50 animate-pulse">
-                            Gemini sta studiando lo scatto migliore per {weatherData.name}...
+                            Gemini is studying the best shot for {weatherData.name}...
                         </p>
                     </div>
                 )}
